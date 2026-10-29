@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mood Café · 나에게 맞는 카페 찾기</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f7f1e8;--card:#fffaf2;--ink:#3b2a20;--mute:#8a7566;--brown:#7a5238;--sand:#e6d6c0;--line:#e3d5c3}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#241a14;--card:#2f231b;--ink:#f3e8d8;--mute:#b9a48f;--brown:#d2a77e;--sand:#43332a;--line:#4a392f}}
+:root[data-theme="dark"]{--bg:#241a14;--card:#2f231b;--ink:#f3e8d8;--mute:#b9a48f;--brown:#d2a77e;--sand:#43332a;--line:#4a392f}
+:root[data-mood="cool"]{--bg:#eef0f2;--card:#fafbfc;--ink:#22272d;--mute:#6b7580;--brown:#4f6a86;--sand:#dde2e8;--line:#d5dbe2}
+@media (prefers-color-scheme:dark){:root[data-mood="cool"]:not([data-theme="light"]){--bg:#171b20;--card:#20262d;--ink:#e6eaef;--mute:#98a3b0;--brown:#8fb0d1;--sand:#2d353e;--line:#333c46}}
+body,header,.cafe,.opt,.tag{transition:background .4s,color .4s}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.7}
+h1,h2,h3,.serif{font-family:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;font-weight:500;letter-spacing:-.01em}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;justify-content:space-between;align-items:center;padding:18px 6vw;background:var(--bg);border-bottom:1px solid var(--line)}
+.logo{font-family:Georgia,serif;font-size:22px;letter-spacing:.04em;cursor:pointer}
+nav a{margin-left:22px;font-size:14px;color:var(--mute);cursor:pointer}
+nav a:hover{color:var(--ink)}
+section{display:none;max-width:1080px;margin:0 auto;padding:0 6vw 96px}
+section.on{display:block}
+.btn{display:inline-block;background:var(--brown);color:#fffaf2;border:0;border-radius:999px;padding:16px 36px;font-size:16px;cursor:pointer;font-family:inherit}
+.btn.ghost{background:transparent;color:var(--brown);border:1px solid var(--brown)}
+.btn:disabled{opacity:.5;cursor:default}
+.ph{border-radius:24px;position:relative;overflow:hidden}
+.ph span{position:absolute;left:16px;bottom:12px;font-size:12px;color:#fffaf2;opacity:.85;letter-spacing:.08em}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:96px 0}
+.eyebrow{font-size:13px;letter-spacing:.2em;color:var(--brown);text-transform:uppercase}
+.hero h1{font-size:clamp(34px,5vw,56px);line-height:1.25;margin:20px 0}
+.hero p{color:var(--mute);max-width:420px;margin:0 0 36px}
+.loadtxt{font-size:13px;color:var(--mute);margin-top:14px}
+.collage{display:grid;grid-template-columns:1fr 1fr;gap:16px;height:460px}
+.collage .ph:first-child{grid-row:span 2}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;border-top:1px solid var(--line);padding-top:56px}
+.steps b{font-family:Georgia,serif;font-size:28px;color:var(--brown)}
+.steps p{color:var(--mute);margin:6px 0 0;font-size:15px}
+.quiz{max-width:760px;margin:0 auto;padding-top:64px;text-align:center}
+.bar{height:3px;background:var(--sand);border-radius:3px;margin:20px 0 48px}
+.bar i{display:block;height:100%;background:var(--brown);border-radius:3px;transition:width .4s}
+.quiz h2{font-size:30px;margin:8px 0 36px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.opt{border:2px solid transparent;background:var(--card);border-radius:24px;padding:10px 10px 22px;cursor:pointer;transition:.25s;font-family:inherit;color:var(--ink);font-size:16px}
+.opt:hover{border-color:var(--brown);transform:translateY(-3px)}
+.opt .ph{height:220px;margin-bottom:16px}
+.opt small{display:block;color:var(--mute);font-size:13px}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:72px 0}
+.res h1{font-size:clamp(32px,4.5vw,50px);margin:14px 0}
+.res p{color:var(--mute)}
+.tags{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0}
+.tag{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 16px;font-size:14px}
+.sw{display:flex;gap:12px;margin:20px 0 32px}
+.sw div{width:52px;height:52px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.meter{margin:24px 0}
+.meter div{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+h2.sec{font-size:32px;margin:0 0 8px}
+.sub{color:var(--mute);margin:0 0 40px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:28px}
+.cafe{background:var(--card);border-radius:24px;overflow:hidden;border:1px solid var(--line)}
+.cafe .ph{border-radius:0;height:210px}
+.cafe .in{padding:22px 24px 26px}
+.cafe h3{margin:0 0 4px;font-size:21px}
+.loc{font-size:13px;color:var(--mute)}
+.cafe dl{margin:16px 0 0;font-size:14px}
+.cafe dt{color:var(--brown);font-size:12px;letter-spacing:.1em;margin-top:10px}
+.cafe dd{margin:0}
+.match{float:right;font-size:12px;background:var(--sand);border-radius:999px;padding:3px 12px;color:var(--brown)}
+footer{text-align:center;color:var(--mute);font-size:13px;padding:40px 6vw;border-top:1px solid var(--line)}
+.errbox{max-width:600px;margin:120px auto;text-align:center;color:var(--mute)}
+.authnav{display:flex;align-items:center;gap:14px}
+.authnav .who{font-size:14px;color:var(--mute)}
+.authnav button{font-family:inherit;font-size:14px;background:none;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:7px 16px;cursor:pointer}
+.authnav button.primary{background:var(--brown);color:#fffaf2;border-color:var(--brown)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(20,14,9,.45);z-index:20;align-items:center;justify-content:center;padding:20px}
+.modal-bg.on{display:flex}
+.modal{background:var(--card);border-radius:24px;padding:36px 32px;width:100%;max-width:380px;position:relative}
+.modal h3{margin:0 0 6px;font-size:22px}
+.modal p.sub2{color:var(--mute);font-size:13px;margin:0 0 24px}
+.modal input{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:12px;margin-bottom:12px;font-size:15px;background:var(--bg);color:var(--ink);font-family:inherit}
+.modal .btn{width:100%;margin-top:6px}
+.modal .close{position:absolute;top:18px;right:20px;background:none;border:0;font-size:20px;color:var(--mute);cursor:pointer}
+.modal .switch{text-align:center;font-size:13px;color:var(--mute);margin-top:16px}
+.modal .switch a{color:var(--brown);cursor:pointer}
+.msg{font-size:13px;margin:-4px 0 12px;min-height:16px}
+.msg.err{color:#b23b3b}
+.msg.ok{color:#3b7a4e}
+.lastresult{margin-top:28px;padding:18px 22px;border:1px solid var(--line);border-radius:18px;background:var(--card);display:flex;justify-content:space-between;align-items:center;gap:16px;max-width:460px}
+.lastresult span{font-size:14px;color:var(--mute)}
+@media(max-width:760px){.hero,.res{grid-template-columns:1fr;gap:32px}.hero{padding:48px 0}.collage{height:300px}.steps{grid-template-columns:1fr}.opt .ph{height:140px}nav a{margin-left:14px}}
+</style>
+</head>
+<body>
+<header><div class="logo" onclick="go('home')">Mood Café</div>
+<nav style="display:flex;align-items:center">
+ <a onclick="startQuiz()">취향 테스트</a><a onclick="go('cafes')">카페 추천</a>
+ <div class="authnav" style="margin-left:22px" id="authnav">
+  <button onclick="openAuth('login')">로그인</button>
+  <button class="primary" onclick="openAuth('signup')">회원가입</button>
+ </div>
+</nav></header>
+
+<!-- 로그인/회원가입 모달 -->
+<div class="modal-bg" id="authModal">
+ <div class="modal">
+  <button class="close" onclick="closeAuth()">×</button>
+  <h3 id="authTitle">로그인</h3>
+  <p class="sub2" id="authSub">계정으로 로그인하고 취향 결과를 저장해보세요.</p>
+  <input type="email" id="authEmail" placeholder="이메일">
+  <input type="password" id="authPw" placeholder="비밀번호 (6자 이상)">
+  <div class="msg" id="authMsg"></div>
+  <button class="btn" id="authSubmit" onclick="submitAuth()">로그인</button>
+  <div class="switch" id="authSwitch">계정이 없으신가요? <a onclick="toggleAuthMode()">회원가입</a></div>
+ </div>
+</div>
+
+<section id="home" class="on">
+ <div class="hero">
+  <div><div class="eyebrow">Find your café mood</div>
+   <h1>오늘의 나를 닮은<br>공간을 찾아드려요</h1>
+   <p>몇 가지 질문에 답하면 나의 카페 취향을 분석하고, 가장 잘 어울리는 카페를 골라 드려요.</p>
+   <button class="btn" id="startBtn" onclick="startQuiz()" disabled>나에게 맞는 카페 찾기</button>
+   <div class="loadtxt" id="loadtxt">데이터를 불러오는 중...</div>
+   <div id="lastResultBox"></div></div>
+  <div class="collage">
+   <div class="ph" style="background:linear-gradient(160deg,#c9a27c,#7a5238)"><span>WARM LIGHT</span></div>
+   <div class="ph" style="background:linear-gradient(160deg,#efe2cc,#d6bd9a)"><span>SLOW MORNING</span></div>
+   <div class="ph" style="background:linear-gradient(160deg,#a58a74,#4b3527)"><span>QUIET CORNER</span></div>
+  </div>
+ </div>
+ <div class="steps">
+  <div><b>01</b><h3>취향 고르기</h3><p>이미지를 보며 끌리는 분위기를 직관적으로 선택해요.</p></div>
+  <div><b>02</b><h3>취향 분석</h3><p>나의 카페 유형과 어울리는 컬러, 키워드를 알려드려요.</p></div>
+  <div><b>03</b><h3>카페 추천</h3><p>취향에 꼭 맞는 카페를 사진과 함께 소개해요.</p></div>
+ </div>
+</section>
+
+<section id="quiz"><div class="quiz">
+ <div class="eyebrow" id="qn"></div><div class="bar"><i id="qb"></i></div>
+ <h2 id="qt"></h2><div class="opts" id="qo"></div>
+</div></section>
+
+<section id="result"></section>
+
+<section id="cafes">
+ <div style="padding:72px 0 0"><div class="eyebrow">Recommended</div><h2 class="sec" id="ct">카페 추천</h2>
+ <p class="sub" id="cs">취향 테스트를 하면 나에게 맞는 카페 5곳을 골라드려요.</p></div>
+ <div class="grid" id="cg"></div>
+</section>
+<footer>© Mood Café · Supabase 연동 버전</footer>
+
+<!-- Supabase JS (CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+/* ===== Supabase 연결 설정 ===== */
+const SUPABASE_URL = "https://txrkrhliautaxzyaskig.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_WI4hcLKQo9-KpBhnb5aBDw_VSEeR072";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* 쿨톤 보조 팔레트(카드 이미지용, DB에 없는 고정값) */
+const CG=[["#e3e8ee","#8b9aab"],["#d5dde6","#6f86a0"],["#eceef0","#b3bac2"],["#dfe5ec","#7c8ea3"],["#e8eaed","#9aa3ae"]];
+
+let T={}, C=[], Q=[];
+let step=0, ans={}, type=null;
+let session=null, authMode="login";
+const $=id=>document.getElementById(id);
+const grad=g=>`background:linear-gradient(160deg,${g[0]},${g[1]})`;
+const cool=()=>type && ans.c==="c";
+
+/* ===== 인증 (JWT / Supabase Auth) ===== */
+function openAuth(mode){authMode=mode;toggleAuthMode(mode);$("authEmail").value="";$("authPw").value="";$("authMsg").textContent="";$("authModal").classList.add("on")}
+function closeAuth(){$("authModal").classList.remove("on")}
+function toggleAuthMode(forced){
+  authMode = forced || (authMode==="login"?"signup":"login");
+  if(authMode==="login"){
+    $("authTitle").textContent="로그인";$("authSub").textContent="계정으로 로그인하고 취향 결과를 저장해보세요.";
+    $("authSubmit").textContent="로그인";
+    $("authSwitch").innerHTML='계정이 없으신가요? <a onclick="toggleAuthMode()">회원가입</a>';
+  }else{
+    $("authTitle").textContent="회원가입";$("authSub").textContent="이메일로 간단히 가입하고 바로 시작해보세요.";
+    $("authSubmit").textContent="회원가입";
+    $("authSwitch").innerHTML='이미 계정이 있으신가요? <a onclick="toggleAuthMode()">로그인</a>';
+  }
+  $("authMsg").textContent="";$("authMsg").className="msg";
+}
+async function submitAuth(){
+  const email=$("authEmail").value.trim(), pw=$("authPw").value;
+  const msg=$("authMsg");
+  if(!email||!pw){msg.textContent="이메일과 비밀번호를 입력해주세요.";msg.className="msg err";return}
+  msg.textContent="처리 중...";msg.className="msg";
+  try{
+    if(authMode==="signup"){
+      const {data,error}=await sb.auth.signUp({email,password:pw});
+      if(error) throw error;
+      if(data.session){ msg.textContent="가입 완료! 로그인됐어요.";msg.className="msg ok"; setTimeout(closeAuth,700) }
+      else { msg.textContent="확인 이메일을 보냈어요. 메일함을 확인해주세요.";msg.className="msg ok" }
+    }else{
+      const {error}=await sb.auth.signInWithPassword({email,password:pw});
+      if(error) throw error;
+      msg.textContent="로그인 완료!";msg.className="msg ok";
+      setTimeout(closeAuth,500);
+    }
+  }catch(err){
+    msg.textContent=err.message||"오류가 발생했어요.";msg.className="msg err";
+  }
+}
+async function signOut(){ await sb.auth.signOut() }
+function updateAuthUI(){
+  const nav=$("authnav");
+  if(session){
+    nav.innerHTML=`<span class="who">${session.user.email}</span><button onclick="signOut()">로그아웃</button>`;
+  }else{
+    nav.innerHTML=`<button onclick="openAuth('login')">로그인</button><button class="primary" onclick="openAuth('signup')">회원가입</button>`;
+  }
+}
+sb.auth.onAuthStateChange((_event,s)=>{ session=s; updateAuthUI(); if(session) loadLastResult(); else $("lastResultBox").innerHTML="" });
+
+/* 로그인 사용자의 지난 결과 저장/조회 */
+async function saveResult(){
+  if(!session) return;
+  try{
+    await sb.from("quiz_results").insert({user_id:session.user.id,type_code:type,a_choice:ans.a,b_choice:ans.b,c_choice:ans.c});
+  }catch(err){ console.error("결과 저장 실패:",err) }
+}
+async function loadLastResult(){
+  if(!session) return;
+  const {data,error}=await sb.from("quiz_results").select("*").order("created_at",{ascending:false}).limit(1);
+  if(error||!data||!data.length){ $("lastResultBox").innerHTML=""; return }
+  const r=data[0];
+  if(!T[r.type_code]) return;
+  $("lastResultBox").innerHTML=`<div class="lastresult"><span>지난번 취향: <b>${T[r.type_code].n}</b></span><button class="btn ghost" onclick='viewLastResult(${JSON.stringify(r).replace(/'/g,"&apos;")})' style="padding:8px 18px">다시 보기</button></div>`;
+}
+function viewLastResult(r){ ans={a:r.a_choice,b:r.b_choice,c:r.c_choice}; type=r.type_code; renderResult(); go("result") }
+
+async function loadData(){
+  const names=["cafe_types","cafes","quiz_questions","quiz_options"];
+  const res = await Promise.all([
+    sb.from("cafe_types").select("*"),
+    sb.from("cafes").select("*"),
+    sb.from("quiz_questions").select("*").order("order_index"),
+    sb.from("quiz_options").select("*").order("id")
+  ]);
+  const bad = res.map((x,i)=>x.error?`[${names[i]}] ${x.error.message}`:null).filter(Boolean);
+  if(bad.length) throw new Error(bad.join(" / "));
+  const [{data:typesData},{data:cafesData},{data:qData},{data:oData}] = res;
+  if(!typesData.length||!cafesData.length||!qData.length||!oData.length)
+    throw new Error("테이블은 있지만 데이터가 비어 있어요. SQL의 시드 데이터(insert)가 실행됐는지, RLS 읽기 정책이 있는지 확인하세요.");
+
+  typesData.forEach(t=>{T[t.code]={n:t.name,d:t.description,k:t.keywords,c:t.warm_colors,cc:t.cool_colors}});
+  C = cafesData.map(c=>({n:c.name,l:c.location,t:c.type_code,w:c.temperature,m:c.signature_menu,f:c.feature,g:[c.gradient_from,c.gradient_to]}));
+  const qTextMap={a:"어떤 분위기에서 쉬고 싶나요?",b:"끌리는 인테리어는요?",c:"어떤 온도의 공간이 좋아요?"};
+  Q = qData.map(q=>({
+    t:q.question || qTextMap[q.axis_key],
+    k:q.axis_key,
+    o:oData.filter(o=>o.question_id===q.id).map(o=>[o.value_code,o.label,o.description,[o.gradient_from,o.gradient_to]])
+  }));
+}
+
+async function init(){
+  try{
+    await loadData();
+    $("startBtn").disabled=false;
+    $("loadtxt").textContent="Supabase 연결 완료 ✓";
+  }catch(err){
+    $("loadtxt").innerHTML="데이터를 불러오지 못했어요.<br><small>원인: "+(err.message||err)+"</small>";
+    console.error("Supabase load error:",err);
+  }
+}
+init();
+
+function go(id){document.documentElement.dataset.mood=(cool()&&(id==='result'||id==='cafes'))?'cool':'';document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===id));scrollTo(0,0);if(id==="cafes")renderCafes()}
+function startQuiz(){
+ if(!Q.length){alert("아직 질문 데이터를 불러오지 못했어요. 메인 화면의 오류 안내를 확인해주세요.");go("home");return}
+ step=0;ans={};go("quiz");showQ()}
+function showQ(){const q=Q[step];$("qn").textContent=`QUESTION ${step+1} / ${Q.length}`;$("qb").style.width=(step/Q.length*100)+"%";$("qt").textContent=q.t;
+ $("qo").innerHTML=q.o.map(o=>`<button class="opt" onclick="pick('${q.k}','${o[0]}')"><div class="ph" style="${grad(o[3])}"></div><b class="serif">${o[1]}</b><small>${o[2]}</small></button>`).join("")}
+function pick(k,v){ans[k]=v;step++;if(step<Q.length)showQ();else finish()}
+function finish(){type=ans.a+ans.b;renderResult();go("result");saveResult()}
+function renderResult(){const t=T[type],warm=ans.c==="w";const pal=warm?t.c:t.cc;
+ const bars=[["조용함","활기참",ans.a==="q"],["빈티지","모던",ans.b==="v"],["따뜻함","차가움",warm]];
+ $("result").innerHTML=`<div class="res"><div><div class="eyebrow">Your café type</div><h1>${t.n}</h1><p>${t.d} ${warm?"따뜻한 조명 아래":"맑고 담백한 빛 속"}에서 가장 편안함을 느껴요.</p>
+ <div class="tags">${t.k.map(x=>`<span class="tag">${x}</span>`).join("")}<span class="tag">${warm?"#따뜻한무드":"#차분한블루그레이"}</span></div>
+ <div class="eyebrow">Mood colors</div><div class="sw">${pal.map(c=>`<div style="background:${c}"></div>`).join("")}</div>
+ ${bars.map(b=>`<div class="meter"><div><span>${b[0]}</span><span>${b[1]}</span></div><div class="bar" style="margin:6px 0 0"><i style="width:${b[2]?75:25}%"></i></div></div>`).join("")}
+ <button class="btn" onclick="go('cafes')">추천 카페 5곳 보기</button> <button class="btn ghost" onclick="startQuiz()">다시 하기</button></div>
+ <div class="ph" style="height:520px;${grad(pal.slice(1,4).reverse())}"><span>${t.n.toUpperCase()}</span></div></div>
+ <h2 class="sec">이런 카페가 잘 어울려요</h2><p class="sub">취향과 가장 가까운 카페를 골라봤어요.</p><div class="grid" id="rg"></div>`;
+ $("rg").innerHTML=sorted().slice(0,3).map(card).join("")}
+function score(c){return type?(c.t===type?60:c.t[0]===type[0]||c.t[1]===type[1]?30:10)+(c.w===ans.c?40:0):0}
+function sorted(){return [...C].sort((a,b)=>score(b)-score(a))}
+function card(c,i){return `<article class="cafe"><div class="ph" style="${grad(cool()?CG[i%CG.length]:c.g)}"><span>${T[c.t].k[0]}</span></div><div class="in">${type?`<span class="match">${Math.min(99,score(c))}% 일치</span>`:""}<h3>${c.n}</h3><div class="loc">📍 ${c.l}</div>
+ <dl><dt>분위기</dt><dd>${T[c.t].k.slice(0,3).join(" ")}</dd><dt>대표 메뉴</dt><dd>${c.m}</dd><dt>특징</dt><dd>${c.f}</dd></dl></div></article>`}
+function renderCafes(){if(type){$("ct").textContent=`${T[type].n}에게 추천해요`;$("cs").textContent="취향과 가장 잘 맞는 5곳을 골랐어요."}
+ $("cg").innerHTML=sorted().slice(0,5).map(card).join("")}
+</script>
+</body>
+</html>
